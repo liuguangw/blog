@@ -24,8 +24,31 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "YARN_PKG_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ${{ env.YARN_PKG_CACHE_DIR }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+
       - name: Install Dependencies
         run: yarn install
 
       - name: Build
         run: yarn build && ls -al
+
+      # 使用云开发 Github Action 部署
+      - name: Deploy static to Tencent CloudBase
+        uses: TencentCloudBase/cloudbase-action@v2
+        with:
+          # 云开发的访问密钥 secretId 和 secretKey
+          secretId: ${{ secrets.SECRET_ID }}
+          secretKey: ${{ secrets.SECRET_KEY }}
+          # 云开发的环境id
+          envId: ${{ secrets.ENV_ID }}
+          region: gz
+          # Github 项目静态文件的路径
+          staticSrcPath: public
