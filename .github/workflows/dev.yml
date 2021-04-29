@@ -1,0 +1,31 @@
+name: Development
+
+on:
+  push:
+    branches: [ master ]
+  # 手动触发
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "YARN_PKG_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build && ls -al
