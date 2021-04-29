@@ -1,13 +1,22 @@
 {
-  "envId": "{{env.ENV_ID}}",
+  "envId": "{{env.envId}}",
+  "region": "ap-guangzhou",
   "framework": {
+    "name": "blog-development-tool",
     "plugins": {
       "client": {
         "use": "@cloudbase/framework-plugin-website",
         "inputs": {
           "outputPath": "public",
           "cloudPath": "/",
-          "ignore": [".git", ".github", "node_modules", "cloudbaserc.js"]
+          "ignore": [
+            ".git",
+            ".github",
+            "node_modules",
+            "cloudbaserc.js",
+            "cloudbaserc.json",
+            "cloudbaseenv.json"
+          ]
         }
       }
     }

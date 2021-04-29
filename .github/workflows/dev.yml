@@ -38,7 +38,14 @@ jobs:
         run: yarn install
 
       - name: Build
-        run: yarn build && ls -al
+        run: |
+        yarn build
+        echo "::group::root files"
+        ls -al
+        echo "::endgroup::"
+        echo "::group::public files"
+        ls -al ./public
+        echo "::endgroup::"
 
       # 使用云开发 Github Action 部署
       - name: Deploy static to Tencent CloudBase
@@ -49,6 +56,3 @@ jobs:
           secretKey: ${{ secrets.SECRET_KEY }}
           # 云开发的环境id
           envId: ${{ secrets.ENV_ID }}
-          region: gz
-          # Github 项目静态文件的路径
-          staticSrcPath: public
