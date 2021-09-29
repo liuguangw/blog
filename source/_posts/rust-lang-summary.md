@@ -3,6 +3,8 @@ title: rust语言浅谈
 date: 2021-09-29 13:58:38
 tags:
  - Rust
+categories:
+  - Code
 ---
 
 Rust是由Mozilla主导开发的通用、编译型编程语言。设计准则为“安全、并发、实用”，支持函数式、并发式、过程式以及面向对象的编程风格。
