@@ -22,9 +22,10 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "YARN_PKG_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+      - name: Get yarn directory path
+        run: |
+         echo "YARN_PKG_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
+         echo "YARN_GBIN_DIR=$(yarn global bin)" >> $GITHUB_ENV
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -49,12 +50,13 @@ jobs:
          ls -al ./public
          echo "::endgroup::"
 
-      # 使用云开发 Github Action 部署
+      - name: Install CloudBase CLI
+        if: ${{ !hashFiles(format('{0}/tcb',env.YARN_GBIN_DIR)) }}
+        run: yarn global add @cloudbase/cli
+
+      # 同步文件
       - name: Deploy static to Tencent CloudBase
-        uses: TencentCloudBase/cloudbase-action@v2
-        with:
-          # 云开发的访问密钥 secretId 和 secretKey
-          secretId: ${{ secrets.SECRET_ID }}
-          secretKey: ${{ secrets.SECRET_KEY }}
-          # 云开发的环境id
-          envId: ${{ secrets.ENV_ID }}
+        run: |
+          tcb login --apiKeyId ${{ secrets.SECRET_ID }} --apiKey ${{ secrets.SECRET_KEY }}
+          tcb hosting detail -e ${{ secrets.ENV_ID }}
+          tcb hosting deploy ./public / -r gz -e ${{ secrets.ENV_ID }}
