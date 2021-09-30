@@ -8,6 +8,9 @@ menu:
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
 
+# Dark Mode
+darkmode: true
+
 sidebar:
   # Sidebar Position.
   position: right
