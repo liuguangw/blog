@@ -14,44 +14,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-
-      - name: Get yarn directory path
-        run: |
-         echo "YARN_PKG_CACHE_DIR=$(yarn cache dir)" >> $GITHUB_ENV
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ${{ env.YARN_PKG_CACHE_DIR }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
+          cache: 'yarn'
 
       - name: Install Dependencies
         run: yarn install
 
-      - name: Build
+      - name: Build blog
         run: |
+         echo "::group::build"
          yarn build
+         echo "::endgroup::"
+
          echo "::group::./ files"
          ls -al
          echo "::endgroup::"
+
          echo "::group::./public files"
          ls -al ./public
          echo "::endgroup::"
 
       # 同步文件
-      - name: Deploy static to Tencent CloudBase
+      - name: Deploy static files to Tencent CloudBase
         run: |
+          echo "::group::tcb login"
           yarn tcb login --apiKeyId ${{ secrets.SECRET_ID }} --apiKey ${{ secrets.SECRET_KEY }}
+          echo "::endgroup::"
+
+          echo "::group::tcb hosting detail"
           yarn tcb hosting detail -e ${{ secrets.ENV_ID }}
+          echo "::endgroup::"
+
+          echo "::group::tcb hosting deploy"
           yarn tcb hosting deploy ./public / -r gz -e ${{ secrets.ENV_ID }}
+          echo "::endgroup::"
